@@ -2,30 +2,28 @@ package day03
 
 import utils.readInput
 
+sealed interface Mult {
+    val value: Int
+
+    data class Enabled(override val value: Int) : Mult
+    data class Disabled(override val value: Int) : Mult
+}
+
 fun main() {
     val mulRegex = Regex("""mul\((\d{1,3}),(\d{1,3})\)|(do\(\))|(don't\(\))""")
     val input = readInput(day = "03")
-    val (result, _) = input.asSequence()
-        .flatMap { line -> mulRegex.findAll(line) }
-        .fold(0 to true) { acc, match ->
-            val (accValue, accDo) = acc
-            val matched = match.groupValues.drop(1).filter { it.isNotEmpty() }
+    val result = input.findMatches(mulRegex)
+        .fold<List<String>, Mult>(Mult.Enabled(0)) { acc, matches ->
             when {
-                matched.first() == "do()" -> accValue to true
+                matches.first() == "do()" -> Mult.Enabled(acc.value)
 
-                matched.first() == "don't()" -> accValue to false
+                matches.first() == "don't()" -> Mult.Disabled(acc.value)
 
-                accDo -> {
-                    val mult = listOf(match.groupValues[1], match.groupValues[2])
-                        .asSequence()
-                        .map { elem -> elem.toInt() }
-                        .reduce { x, elem -> x * elem }
-                    return@fold (accValue + mult) to accDo
-                }
+                acc is Mult.Enabled -> acc.copy(acc.value + matches.evaluateMult())
 
-                else -> accValue to accDo
+                else -> acc
             }
         }
 
-    print(result)
+    print(result.value)
 }
