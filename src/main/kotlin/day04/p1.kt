@@ -26,21 +26,24 @@ fun Pair<Int, Int>.xmasSequences(): Sequence<Sequence<Pair<Int, Int>>> {
     }
 }
 
+fun Sequence<Pair<Int, Int>>.toWord(lines: List<CharArray>): String {
+    return this.map { (x, y) ->
+        lines.getOrNull(x)?.getOrNull(y)
+    }.joinToString("")
+}
+
 fun main() {
     val input = readInput("04")
     val lines = input.map { it.toCharArray() }
-    var wordCount = 0
-    for ((i, line) in lines.withIndex()) {
-        for ((j, c) in line.withIndex()) {
-            if (c != 'X') continue
-            for (neighbours in Pair(i, j).xmasSequences()) {
-                val word = neighbours.mapNotNull { (x, y) -> lines.getOrNull(x)?.getOrNull(y) }
-                    .joinToString("")
-                if (word == "XMAS") {
-                    wordCount++
+    val result = lines.withIndex()
+        .sumOf { (i, line) ->
+            line.withIndex()
+                .filter { (_, c) -> c == 'X' }
+                .sumOf { (j, _) ->
+                    Pair(i, j).xmasSequences()
+                        .map { neighbours -> neighbours.toWord(lines) }
+                        .count { it == "XMAS" }
                 }
-            }
         }
-    }
-    print(wordCount)
+    print(result)
 }
