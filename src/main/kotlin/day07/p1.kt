@@ -8,18 +8,34 @@ fun String.toSetup(): Pair<Long, List<Long>> {
     return (test.toLong() to num.map { it.toLong() })
 }
 
-val base = listOf(
-    listOf("+"),
-    listOf("*"),
-)
-
-fun List<String>.mixUp(size: Int): List<List<String>> {
+fun List<String>.mixUp(size: Int, base: List<List<String>>): List<List<String>> {
     if (size == 2) {
         return base
     }
-    val next = mixUp(size - 1)
+    val next = mixUp(size - 1, base)
     return base.flatMap { part ->
         next.map { x -> part + x }
+    }
+}
+
+fun List<List<String>>.findCombination(test: Long, nums: List<Long>): List<String>? = find { perm ->
+    val res = nums.reduceIndexed { index, acc, elem ->
+        when (val operator = perm[index - 1]) {
+            "+" -> acc + elem
+            "*" -> acc * elem
+            "||" -> "$acc$elem".toLong()
+            else -> throw IllegalArgumentException("Unknown operator $operator")
+        }
+    }
+    res == test
+}
+
+fun Sequence<Pair<Long, List<Long>>>.retainValid(operators: List<String>): Sequence<Long> {
+    val base = operators.map { listOf(it) }
+    return mapNotNull { (test, nums) ->
+        val permutations = operators.mixUp(nums.size, base)
+        val perm = permutations.findCombination(test, nums)
+        if (perm == null) null else test
     }
 }
 
@@ -27,19 +43,7 @@ fun main() {
     val operators = listOf("+", "*")
     val result = readInput("07").asSequence()
         .map { line -> line.toSetup() }
-        .mapNotNull { (test, nums) ->
-            val permutations = operators.mixUp(nums.size)
-            val perm = permutations.find { perm ->
-                nums.reduceIndexed { index, acc, elem ->
-                    when (val operator = perm[index - 1]) {
-                        "+" -> acc + elem
-                        "*" -> acc * elem
-                        else -> throw IllegalArgumentException("Unknown operator $operator")
-                    }
-                } == test
-            }
-            if (perm == null) null else test
-        }
+        .retainValid(operators)
         .sum()
     println(result)
 }
