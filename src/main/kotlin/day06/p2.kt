@@ -7,13 +7,7 @@ fun main() {
     val reference = input.toWalkable().walk()!!
     val positions = reference.flatMapIndexed { y, chars ->
         chars.flatMapIndexed { x, c ->
-            if (c == 'X') listOf(
-                y to x,
-                y - 1 to x,
-                y to x + 1,
-                y + 1 to x,
-                y to x - 1,
-            ) else emptyList()
+            if (c == 'X') listOf(y to x) else emptyList()
         }
     }
     val result = positions.asSequence()
