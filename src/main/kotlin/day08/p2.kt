@@ -2,14 +2,20 @@ package day08
 
 import utils.readInput
 
-fun inBounds(point: Pair<Int, Int>, lastPoint: Pair<Int, Int>): Boolean {
-    return point.first in 0 until lastPoint.first
-            && point.second in 0 until lastPoint.second
+fun drawLine(a: Point, b: Point, lastPoint: Point): Set<Point> {
+    val diff = (a.first - b.first to a.second - b.second)
+    return buildSet {
+        var next = (a.first + diff.first to a.second + diff.second)
+        while (inBounds(next, lastPoint)) {
+            add(next)
+            next = (next.first + diff.first to next.second + diff.second)
+        }
+    }
 }
 
 fun main() {
     val input = readInput("08")
-    val antennas = buildMap<Char, Set<Pair<Int, Int>>> {
+    val antennas = buildMap<Char, Set<Point>> {
         for ((y, line) in input.withIndex()) {
             for ((x, c) in line.withIndex()) {
                 if (c != '.') {
@@ -24,17 +30,8 @@ fun main() {
         for (locations in antennas.values) {
             val combinations = combinationsOf(locations, 2)
             for ((a, b) in combinations) {
-                val diff = (a.first - b.first to a.second - b.second)
-                var fromA = (a.first + diff.first to a.second + diff.second)
-                while (inBounds(fromA, lastPoint)) {
-                    add(fromA)
-                    fromA = (fromA.first + diff.first to fromA.second + diff.second)
-                }
-                var fromB = (b.first - diff.first to b.second - diff.second)
-                while (inBounds(fromB, lastPoint)) {
-                    add(fromB)
-                    fromB = (fromB.first - diff.first to fromB.second - diff.second)
-                }
+                addAll(drawLine(a, b, lastPoint))
+                addAll(drawLine(b, a, lastPoint))
             }
             if (locations.size > 1) {
                 addAll(locations)
