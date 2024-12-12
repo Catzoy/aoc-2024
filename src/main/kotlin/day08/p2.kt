@@ -1,5 +1,6 @@
 package day08
 
+import utils.Point
 import utils.readInput
 
 fun drawLine(a: Point, b: Point, lastPoint: Point): Set<Point> {

@@ -1,8 +1,7 @@
 package day08
 
+import utils.Point
 import utils.readInput
-
-typealias Point = Pair<Int, Int>
 
 fun <T> combinationsOf(locations: Set<T>, size: Int): List<List<T>> {
     if (size == 1) {

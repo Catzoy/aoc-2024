@@ -1,16 +1,10 @@
 package day10
 
+import utils.Point
+import utils.directions
 import utils.readInput
 
-typealias Point = Pair<Int, Int>
 typealias Trail = List<Point>
-
-val directions = listOf(
-    (-1 to 0),
-    (1 to 0),
-    (0 to -1),
-    (0 to 1)
-)
 
 fun startingPositionsOf(matrix: List<List<Int>>): Set<Point> {
     return matrix.withIndex().flatMap { (y, line) ->
