@@ -51,15 +51,18 @@ fun perimeterOf(region: Set<Point>): Int {
     }
 }
 
-fun totalPriceOf(garden: Map<Char, List<Set<Point>>>): Long {
+fun totalPriceOf(
+    garden: Map<Char, List<Set<Point>>>,
+    priceOf: (Set<Point>) -> Long,
+): Long {
     return garden.values.sumOf { regions ->
-        regions.sumOf { region -> perimeterOf(region) * areaOf(region) }
+        regions.sumOf { region -> priceOf(region) }
     }
 }
 
 fun main() {
     val input = readInput("12")
     val garden = regionsOf(input)
-    val result = totalPriceOf(garden)
+    val result = totalPriceOf(garden) { region -> perimeterOf(region) * areaOf(region) }
     println(result)
 }
