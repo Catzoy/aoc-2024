@@ -1,12 +1,11 @@
 package day13
 
-import utils.Point
 import utils.readInput
 
 data class Machine(
-    val a: Pair<Int, Int>,
-    val b: Pair<Int, Int>,
-    val prize: Point,
+    val a: Pair<Long, Long>,
+    val b: Pair<Long, Long>,
+    val prize: Pair<Long, Long>,
 )
 
 fun readInput(): List<Machine> {
@@ -18,7 +17,7 @@ fun readInput(): List<Machine> {
         .chunked(4)
         .map { lines ->
             val matches = lines.zip(regexs).map { (line, regex) ->
-                regex.find(line)!!.groupValues.drop(1).map { it.toInt() }
+                regex.find(line)!!.groupValues.drop(1).map { it.toLong() }
             }
             Machine(
                 a = matches[0][0] to matches[0][1],
@@ -28,12 +27,12 @@ fun readInput(): List<Machine> {
         }
 }
 
-fun solutions(num1: Int, num2: Int, target: Int): Set<Pair<Int, Int>> {
+fun solutions(num1: Long, num2: Long, target: Long): Set<Pair<Long, Long>> {
     return buildSet {
-        var i = 0
+        var i = 0L
         while (i * num1 <= target) {
             val remaining = target - i * num1
-            if (remaining % num2 == 0) {
+            if (remaining % num2 == 0L) {
                 add(i to remaining / num2)
             }
             i++
@@ -41,7 +40,7 @@ fun solutions(num1: Int, num2: Int, target: Int): Set<Pair<Int, Int>> {
     }
 }
 
-fun solve(machines: List<Machine>): Int {
+fun solve(machines: List<Machine>): Long {
     return machines.sumOf { machine ->
         val xs = solutions(machine.a.first, machine.b.first, machine.prize.first)
         val ys = solutions(machine.a.second, machine.b.second, machine.prize.second)
