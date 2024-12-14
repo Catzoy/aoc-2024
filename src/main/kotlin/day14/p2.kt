@@ -7,6 +7,9 @@ fun main() {
     val (wide, tall) = 101 to 103
     val robots = readInput()
     var counter = 0
+    /// 30 - first time a horizontal `frame` appears
+    /// 103 - each time a new horizontal `frame` appears
+    /// 10401 - last unique combination of robots
     val secs = generateSequence {
         val s = 30L + 103 * counter++
         if (s < 10401) s else null
