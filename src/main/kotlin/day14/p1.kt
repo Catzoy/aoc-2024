@@ -14,19 +14,28 @@ fun readInput(): List<Pair<Point, Point>> {
     }
 }
 
-fun simulate(dimensions: Pair<Int, Int>, seconds: Int, robots: Robots): Room {
+fun simulate(dimensions: Pair<Int, Int>, seconds: Long, robots: Robots, initial: Room? = null): Room {
     val (wide, tall) = dimensions
     val room = List(tall) { MutableList(wide) { emptyList<Int>() } }
     robots.forEachIndexed { index, (p, v) ->
         val (pY, pX) = p
         val (vY, vX) = v
-        val rY = ((pY + vY * seconds) % tall).let { if (it < 0) it + tall else it }
-        val rX = ((pX + vX * seconds) % wide).let { if (it < 0) it + wide else it }
+        val rY = ((pY + vY * seconds) % tall).let { if (it < 0) it + tall else it }.toInt()
+        val rX = ((pX + vX * seconds) % wide).let { if (it < 0) it + wide else it }.toInt()
         room[rY][rX] = buildList {
             addAll(room[rY][rX])
             add(index)
         }
     }
+    val hasLooped = initial?.withIndex()?.all { (y, row) ->
+        row.withIndex().all { (x, it) ->
+            room[y][x] == it
+        }
+    }
+    if (hasLooped == true) {
+        throw Exception("Looped")
+    }
+
     return room
 }
 
