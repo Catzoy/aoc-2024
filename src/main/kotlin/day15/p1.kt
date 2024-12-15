@@ -3,7 +3,7 @@ package day15
 import utils.Point
 import utils.readInput
 
-private fun readInput(): Pair<List<String>, String> {
+internal fun readInput(): Pair<List<String>, String> {
     val input = readInput("15")
     val iterator = input.iterator()
     val warehouse = buildList {
