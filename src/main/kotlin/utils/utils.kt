@@ -7,12 +7,14 @@ fun readInput(day: String): List<String> {
         .readLines()
 }
 
-val directions = listOf<Direction>(
-    (-1 to 0),
-    (1 to 0),
-    (0 to -1),
-    (0 to 1)
+val dLeft: Direction = (0 to -1)
+val dRight: Direction = (0 to 1)
+val dUp: Direction = (-1 to 0)
+val dDown: Direction = (1 to 0)
+val directions = listOf(
+    dLeft, dRight, dUp, dDown
 )
+
 typealias Point = Pair<Int, Int>
 typealias Direction = Pair<Int, Int>
 
@@ -36,3 +38,14 @@ val Direction.adjacent
         (0 to -1), (0 to 1) -> listOf((-1 to 0), (1 to 0))
         else -> error("Invalid direction")
     }
+
+fun Iterable<CharSequence>.indicesOf(element: Char): Pair<Int, Int> {
+    return asSequence()
+        .flatMapIndexed { y, row ->
+            row.asSequence()
+                .mapIndexedNotNull { x, e ->
+                    if (e == element) y to x else null
+                }
+        }
+        .first()
+}
