@@ -18,7 +18,7 @@ fun watashiWaStar(
     matrix: List<String>,
     start: Move,
     end: Point,
-): MutableList<Successor>? {
+): MutableList<Successor> {
     val closed = mutableListOf<Successor>()
     val open = mutableListOf<Successor>().apply {
         add(Successor(move = start, f = 0))
@@ -45,17 +45,20 @@ fun watashiWaStar(
             }
 
             if (successor.move.second == end) {
-                return closed.apply { add(successor) }
+                closed.apply { add(successor) }
+                continue
             }
 
             successor.g = q.g + q.move.score(successor.move)
             successor.h = successor.move.second.manhattan(end)
             successor.f = successor.g + successor.h
 
-            if (open.any { s -> s.move.second == successor.move.second && s.f < successor.f }) {
+
+            if (open.any { s -> s.move == successor.move && s.f < successor.f }) {
                 continue
             }
-            if (closed.any { s -> s.move.second == successor.move.second && s.f < successor.f }) {
+
+            if (closed.any { s -> s.move == successor.move && s.f < successor.f }) {
                 continue
             }
 
@@ -65,7 +68,7 @@ fun watashiWaStar(
         closed.add(q)
         open.remove(q)
     }
-    return null
+    return closed
 }
 
 fun Move.score(other: Move): Int {
@@ -87,27 +90,29 @@ fun calculateScore(path: Path): Int {
 
 fun main() {
     val input = readInput("16")
-    val s = input.indicesOf('S')
-    val e = input.indicesOf('E')
-    val position = (dRight to s)
+    val endPoint = input.indicesOf('E')
     val path = watashiWaStar(
         matrix = input,
-        start = position,
-        end = e
-    ) ?: error("Unsolvable maze!")
-
-    val m = input.map { it.toMutableList() }.toMutableList()
-    var p = path.last()
-    val solution = mutableListOf<Move>()
-    while (p.parent != null) {
-        solution.add(p.move)
-        p.move.second.let { (y, x) -> m[y][x] = 'X' }
-        p = p.parent!!
+        start = input.indicesOf('S').let { s -> (dRight to s) },
+        end = endPoint,
+    )
+    val ends = path.filter { it.move.second == endPoint }
+    val results = mutableMapOf<Int, MutableList<List<Move>>>()
+    for (e in ends) {
+        val solution = mutableListOf(e.move)
+        var p = e.parent
+        while (p != null) {
+            solution.add(p.move)
+            p = p.parent
+        }
+        val score = calculateScore(solution)
+        results.getOrPut(score) { mutableListOf() }.add(solution)
     }
-    solution.add(p.move)
-    for (row in m) {
-        println(row.joinToString(""))
-    }
 
-    println("Score: ${calculateScore(solution.reversed())}")
+    results.minOf { it.key }.let { key ->
+        val solutions = results.getValue(key)
+        println("Best score: $key")
+        val unique = solutions.asSequence().flatten().map { it.second }.toSet()
+        println(unique.size)
+    }
 }
