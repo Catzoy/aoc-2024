@@ -1,7 +1,6 @@
 package day16
 
 import utils.*
-import kotlin.math.absoluteValue
 
 typealias Move = Pair<Direction, Point>
 typealias Path = List<Pair<Direction, Point>>
@@ -73,11 +72,6 @@ fun watashiWaStar(
 
 fun Move.score(other: Move): Int {
     return if (first == other.first) 1 else 1001
-}
-
-fun Point.manhattan(other: Point): Int {
-    return (first - other.first).absoluteValue +
-            (second - other.second).absoluteValue
 }
 
 fun calculateScore(path: Path): Int {

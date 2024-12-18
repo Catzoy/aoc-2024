@@ -1,6 +1,7 @@
 package utils
 
 import java.io.File
+import kotlin.math.absoluteValue
 
 fun readInput(day: String): List<String> {
     return File("src/main/kotlin/day$day/input.txt")
@@ -48,4 +49,8 @@ fun Iterable<CharSequence>.indicesOf(element: Char): Pair<Int, Int> {
                 }
         }
         .first()
+}
+fun Point.manhattan(other: Point): Int {
+    return (first - other.first).absoluteValue +
+            (second - other.second).absoluteValue
 }
