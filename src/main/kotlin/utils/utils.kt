@@ -13,7 +13,7 @@ val dRight: Direction = (0 to 1)
 val dUp: Direction = (-1 to 0)
 val dDown: Direction = (1 to 0)
 val directions = listOf(
-    dLeft, dRight, dUp, dDown
+    dLeft, dUp, dRight, dDown
 )
 
 typealias Point = Pair<Int, Int>
