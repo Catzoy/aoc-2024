@@ -40,6 +40,16 @@ val Direction.adjacent
         else -> error("Invalid direction")
     }
 
+fun Direction.toChar(): Char {
+    return when (this) {
+        dLeft -> '<'
+        dRight -> '>'
+        dUp -> '^'
+        dDown -> 'v'
+        else -> throw Exception("Unknown direction $this")
+    }
+}
+
 fun Iterable<CharSequence>.indicesOf(element: Char): Pair<Int, Int> {
     return asSequence()
         .flatMapIndexed { y, row ->
@@ -50,6 +60,7 @@ fun Iterable<CharSequence>.indicesOf(element: Char): Pair<Int, Int> {
         }
         .first()
 }
+
 fun Point.manhattan(other: Point): Int {
     return (first - other.first).absoluteValue +
             (second - other.second).absoluteValue
